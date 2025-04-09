@@ -2,32 +2,26 @@ package com.example.flutternativeimage;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
 
 /**
- * FlutterNativeImagePlugin
+ * FlutterNativeImagePlugin - Flutter Plugin Using V2 Embedding
  */
 public class FlutterNativeImagePlugin implements FlutterPlugin {
   private static final String CHANNEL_NAME = "flutter_native_image";
   private MethodChannel channel;
-  /**
-   * Plugin registration.
-   */
-  public static void registerWith(PluginRegistry.Registrar registrar) {
-    final FlutterNativeImagePlugin plugin = new FlutterNativeImagePlugin();
-    plugin.setupChannel(registrar.messenger(), registrar.context());
+
+  @Override
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
+    setupChannel(flutterPluginBinding.getBinaryMessenger(), flutterPluginBinding.getApplicationContext());
   }
 
   @Override
-  public void onAttachedToEngine(FlutterPlugin.FlutterPluginBinding binding) {
-    setupChannel(binding.getFlutterEngine().getDartExecutor(), binding.getApplicationContext());
-  }
-
-  @Override
-  public void onDetachedFromEngine(FlutterPlugin.FlutterPluginBinding binding) {
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     teardownChannel();
   }
 
@@ -38,7 +32,9 @@ public class FlutterNativeImagePlugin implements FlutterPlugin {
   }
 
   private void teardownChannel() {
-    channel.setMethodCallHandler(null);
-    channel = null;
+    if (channel != null) {
+      channel.setMethodCallHandler(null);
+      channel = null;
+    }
   }
 }
